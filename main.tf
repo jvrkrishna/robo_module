@@ -1,9 +1,8 @@
-## I am policy
+################## Policy###################
 resource "aws_iam_policy" "policy" {
-  name        = "${var.component}-${var.env}-ssm-policy"
+  name        = "${component}.${env}.ssm.policy"
   path        = "/"
-  description = "${var.component}-${var.env}-ssm-policy"
-
+  description = "Used to access the ssm parameters"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -18,10 +17,8 @@ resource "aws_iam_policy" "policy" {
   })
 }
 
-## I am Role
-resource "aws_iam_role" "role" {
-  name = "${var.component}-${var.env}-Ec2-Role"
-
+resource "aws_iam_role" "test_role" {
+  name = "${component}.${env}.ec2.Role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -36,3 +33,13 @@ resource "aws_iam_role" "role" {
     ]
   })
 }
+
+
+
+
+###sg
+
+###instance
+
+##Route
+
