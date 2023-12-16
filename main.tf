@@ -1,6 +1,6 @@
 ################## Policy###################
 resource "aws_iam_policy" "policy" {
-  name        = "${component}.${env}.ssm.policy"
+  name        = "${var.component}.${var.env}.ssm.policy"
   path        = "/"
   description = "Used to access the ssm parameters"
   policy = jsonencode({
@@ -18,7 +18,7 @@ resource "aws_iam_policy" "policy" {
 }
 
 resource "aws_iam_role" "test_role" {
-  name = "${component}.${env}.ec2.Role"
+  name = "${var.component}.${var.env}.ec2.Role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
