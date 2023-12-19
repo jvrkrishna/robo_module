@@ -9,7 +9,7 @@ resource "aws_iam_policy" "policy" {
     Statement = [
       {
         Action = [
-          "ec2:Getparameter*",
+          "ec2:GetParameter*",
         ]
         Effect   = "Allow"
         Resource = "*"
@@ -43,7 +43,7 @@ resource "aws_iam_instance_profile" "profile" {
 }
 ################ Policy attachment##############
 resource "aws_iam_role_policy_attachment" "attach" {
-  role       = "${var.component}.${var.env}"
+  role       = aws_iam_role.role.name
   policy_arn = aws_iam_policy.policy.arn
 }
 
