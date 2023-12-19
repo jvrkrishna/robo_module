@@ -83,12 +83,6 @@ resource "aws_route53_record" "www" {
   ttl     = 30
   records = [aws_instance.web.private_ip]
 }
-############ aws ami id datasource terraform #############
-data "aws_ami" "example" {
-  most_recent      = true
-  name_regex       = "Centos-8-DevOps-Practice"
-  owners           = ["973714476881"]
-}
 
 ######### Security group terraform ##########
 resource "aws_security_group" "sg" {
