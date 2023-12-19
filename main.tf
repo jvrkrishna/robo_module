@@ -1,14 +1,15 @@
-################## I am Policy###################
+############### I am Policy ####################
 resource "aws_iam_policy" "policy" {
   name        = "${var.component}.${var.env}.ssm.policy"
   path        = "/"
-  description = "Used to access the ssm parameters"
+  description = "My test policy"
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
         Action = [
-          "ssm:GetParameter*",
+          "ec2:Getparameter*",
         ]
         Effect   = "Allow"
         Resource = "*"
@@ -17,9 +18,10 @@ resource "aws_iam_policy" "policy" {
   })
 }
 
-################# I am role ########################
+################ I am role ##################
 resource "aws_iam_role" "role" {
-  name = "${var.component}.${var.env}.ec2.Role"
+  name = "${var.component}.${var.env}.ec2role"
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -34,15 +36,14 @@ resource "aws_iam_role" "role" {
     ]
   })
 }
-
-############### Create I am instance profile ###################
-resource "aws_iam_instance_profile" "instance_profile" {
-  name = "${var.component}-${var.env}-instance-profile"
+################ I am instance profile#####################
+resource "aws_iam_instance_profile" "profile" {
+  name = "${var.component}.${var.env}"
   role = aws_iam_role.role.name
 }
-############### Create Policy attachment in terraform ##############
-resource "aws_iam_role_policy_attachment" "policy-attach" {
-  role       = aws_iam_role.role.name
+################ Policy attachment##############
+resource "aws_iam_role_policy_attachment" "attach" {
+  role       = "${var.component}.${var.env}"
   policy_arn = aws_iam_policy.policy.arn
 }
 
@@ -51,7 +52,8 @@ resource "aws_instance" "web" {
   ami                    = data.aws_ami.example.id
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.sg.id]
-  iam_instance_profile = aws_iam_instance_profile.instance_profile.name
+  iam_instance_profile = aws_iam_instance_profile.profile.name
+
   tags = {
     Name = "${var.component}.${var.env}"
   }
@@ -81,10 +83,16 @@ resource "aws_route53_record" "www" {
   ttl     = 30
   records = [aws_instance.web.private_ip]
 }
+############ aws ami id datasource terraform #############
+data "aws_ami" "example" {
+  most_recent      = true
+  name_regex       = "Centos-8-DevOps-Practice"
+  owners           = ["973714476881"]
+}
 
 ######### Security group terraform ##########
 resource "aws_security_group" "sg" {
-  name        = "${var.component}.${var.env}.sg"
+  name        = "${var.component}.${var.env}"
   description = "Allow TLS inbound traffic"
 
   ingress {
@@ -100,5 +108,12 @@ resource "aws_security_group" "sg" {
     protocol         = "-1"
     cidr_blocks      = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name = "${var.component}.${var.env}"
+  }
 }
+
+
+
 
